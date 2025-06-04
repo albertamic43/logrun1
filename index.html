@@ -1,568 +1,552 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2487.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Running Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .input-section {
+            text-align: center;
+        }
+
+        .input-section h2 {
+            margin-bottom: 20px;
+            color: #4a5568;
+        }
+
+        .date-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            background: white;
+        }
+
+        .distance-input-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .distance-input {
+            width: 100px;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 18px;
+            text-align: center;
+            background: white;
+        }
+
+        .km-label {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .streak-section {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .streak-number {
+            font-size: 36px;
+            font-weight: 800;
+            color: #c53030;
+            margin-bottom: 5px;
+        }
+
+        .streak-label {
+            font-size: 14px;
+            color: #744210;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .recent-runs {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .run-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .run-item:last-child {
+            border-bottom: none;
+        }
+
+        .run-date {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .run-distance {
+            font-size: 16px;
+            color: #2b8a3e;
+            font-weight: 600;
+        }
+
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .delete-btn:hover {
+            background: #ee5a24;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="en"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Running Tracker&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>* {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-sizing: border-box;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>min-height: 100vh;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #333;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.container {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-width: 400px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0 auto;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.header {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 30px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.header h1 {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 2.2em;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-shadow: 2px 2px 4px rgba(0,0,0,0.3);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.card {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(255, 255, 255, 0.95);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 25px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 8px 32px rgba(0,0,0,0.1);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>backdrop-filter: blur(10px);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid rgba(255,255,255,0.2);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.input-section {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.input-section h2 {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #4a5568;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.date-input {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 2px solid #e2e8f0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 16px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.distance-input-container {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gap: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.distance-input {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 2px solid #e2e8f0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 18px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.km-label {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 18px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #4a5568;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.btn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 18px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.3s ease;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.btn-primary {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: linear-gradient(135deg, #4CAF50, #45a049);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.btn-primary:hover {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform: translateY(-2px);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.btn-secondary {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: linear-gradient(135deg, #ff6b6b, #ee5a24);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.btn-secondary:hover {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform: translateY(-2px);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.stats-grid {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: grid;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>grid-template-columns: 1fr 1fr;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gap: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.stat-item {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(255, 255, 255, 0.7);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid rgba(255, 255, 255, 0.3);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.stat-value {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 24px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 700;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #2d3748;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 5px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.stat-label {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #718096;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-transform: uppercase;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>letter-spacing: 0.5px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.streak-section {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.streak-number {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 36px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 800;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #c53030;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 5px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.streak-label {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 14px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #744210;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-transform: uppercase;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>letter-spacing: 1px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.recent-runs {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-height: 200px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>overflow-y: auto;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.run-item {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: space-between;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 12px 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: 1px solid #e2e8f0;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.run-item:last-child {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: none;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.run-date {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #4a5568;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.run-distance {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 16px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #2b8a3e;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.delete-btn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #ff6b6b;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 6px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 4px 8px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-left: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.delete-btn:hover {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #ee5a24;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.message {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.success {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #d4edda;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #155724;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid #c3e6cb;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.error {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #f8d7da;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #721c24;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid #f5c6cb;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>@media (max-width: 480px) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>.container {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>padding: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>.card {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>padding: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>.stats-grid {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>grid-template-columns: 1fr;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="header"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h1&gt;🏃‍♂️ Running Tracker&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p&gt;Track your daily runs and build your streak!&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="input-section"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2&gt;Log Your Run&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;input type="date" id="runDate" class="date-input"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="distance-input-container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;input type="number" id="distance" class="distance-input" placeholder="0" step="0.1" min="0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;span class="km-label"&gt;km&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button onclick="addRun()" class="btn btn-primary"&gt;Add Run&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button onclick="clearAllData()" class="btn btn-secondary"&gt;Clear All Data&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="message"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="streak-section"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="streak-number" id="currentStreak"&gt;0&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="streak-label"&gt;Day Streak&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2 style="text-align: center; margin-bottom: 20px; color: #4a5568;"&gt;Statistics&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="stats-grid"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="stat-item"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-value" id="totalDistance"&gt;0.0&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-label"&gt;Total km&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="stat-item"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-value" id="weekDistance"&gt;0.0&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-label"&gt;This Week&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="stat-item"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-value" id="monthDistance"&gt;0.0&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-label"&gt;This Month&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="stat-item"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-value" id="totalRuns"&gt;0&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-label"&gt;Total Runs&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2 style="text-align: center; margin-bottom: 20px; color: #4a5568;"&gt;Recent Runs&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="recent-runs" id="recentRuns"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;p style="text-align: center; color: #718096;"&gt;No runs logged yet&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let runs = [];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Initialize the app</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function init() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Set today's date as default</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('runDate').value = new Date().toISOString().split('T')[0];</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Load saved data</p>
-<p class="p1"><span class="Apple-converted-space">            </span>loadData();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>updateDisplay();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Save data to device storage</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function saveData() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>try {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>localStorage.setItem('runningTrackerData', JSON.stringify(runs));</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} catch (error) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>console.error('Failed to save data:', error);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showMessage('Failed to save data', 'error');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Load data from device storage</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function loadData() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>try {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const savedData = localStorage.getItem('runningTrackerData');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (savedData) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>runs = JSON.parse(savedData);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Sort runs by date (newest first)</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>runs.sort((a, b) =&gt; new Date(b.date) - new Date(a.date));</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} catch (error) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>console.error('Failed to load data:', error);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>runs = [];</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Add a new run</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function addRun() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const dateInput = document.getElementById('runDate');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const distanceInput = document.getElementById('distance');</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const date = dateInput.value;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const distance = parseFloat(distanceInput.value);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!date) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showMessage('Please select a date', 'error');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>return;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!distance || distance &lt;= 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showMessage('Please enter a valid distance', 'error');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>return;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Check if run already exists for this date</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const existingRunIndex = runs.findIndex(run =&gt; run.date === date);</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (existingRunIndex !== -1) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Update existing run</p>
-<p class="p1"><span class="Apple-converted-space">                </span>runs[existingRunIndex].distance = distance;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showMessage('Run updated successfully!', 'success');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Add new run</p>
-<p class="p1"><span class="Apple-converted-space">                </span>runs.push({ date, distance });</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showMessage('Run added successfully!', 'success');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Sort runs by date (newest first)</p>
-<p class="p1"><span class="Apple-converted-space">            </span>runs.sort((a, b) =&gt; new Date(b.date) - new Date(a.date));</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Clear input</p>
-<p class="p1"><span class="Apple-converted-space">            </span>distanceInput.value = '';</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>saveData();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>updateDisplay();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Delete a run</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function deleteRun(date) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>runs = runs.filter(run =&gt; run.date !== date);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>saveData();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>updateDisplay();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>showMessage('Run deleted', 'success');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Calculate current streak</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function calculateStreak() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (runs.length === 0) return 0;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Get unique dates and sort them (newest first)</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const uniqueDates = [...new Set(runs.map(run =&gt; run.date))].sort((a, b) =&gt; new Date(b) - new Date(a));</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const today = new Date();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>today.setHours(0, 0, 0, 0);</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>let streak = 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>let checkDate = new Date(today);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Check if we ran today or yesterday to start the streak</p>
-<p class="p1"><span class="Apple-converted-space">            </span>let streakStarted = false;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>for (let dateStr of uniqueDates) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const runDate = new Date(dateStr);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>runDate.setHours(0, 0, 0, 0);</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>const daysDiff = Math.floor((checkDate - runDate) / (1000 * 60 * 60 * 24));</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (daysDiff === 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Ran on checkDate</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>streak++;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>streakStarted = true;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>checkDate.setDate(checkDate.getDate() - 1);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} else if (daysDiff === 1 &amp;&amp; streakStarted) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Ran the day before, continue streak</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>streak++;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>checkDate.setDate(checkDate.getDate() - 1);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} else if (daysDiff === 1 &amp;&amp; !streakStarted) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// First run was yesterday, start streak</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>streak++;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>streakStarted = true;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>checkDate.setDate(checkDate.getDate() - 1);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} else if (daysDiff &gt; 1) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Gap in streak</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>break;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>return streak;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Calculate distances for different periods</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function calculateDistances() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const today = new Date();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>today.setHours(23, 59, 59, 999); // End of today</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Calculate start of this week (Sunday)</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const thisWeekStart = new Date(today);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>thisWeekStart.setDate(today.getDate() - today.getDay());</p>
-<p class="p1"><span class="Apple-converted-space">            </span>thisWeekStart.setHours(0, 0, 0, 0);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Calculate start of this month</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>thisMonthStart.setHours(0, 0, 0, 0);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>let total = 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>let week = 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>let month = 0;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>runs.forEach(run =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const runDate = new Date(run.date + 'T00:00:00'); // Ensure consistent parsing</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const distance = parseFloat(run.distance) || 0;</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>total += distance;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Check if run is in current week</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (runDate &gt;= thisWeekStart &amp;&amp; runDate &lt;= today) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>week += distance;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Check if run is in current month</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (runDate &gt;= thisMonthStart &amp;&amp; runDate &lt;= today) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>month += distance;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>return {<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>total: Math.round(total * 10) / 10,<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>week: Math.round(week * 10) / 10,<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>month: Math.round(month * 10) / 10<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Update the display</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function updateDisplay() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const distances = calculateDistances();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const streak = calculateStreak();</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Update statistics</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('totalDistance').textContent = distances.total.toFixed(1);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('weekDistance').textContent = distances.week.toFixed(1);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('monthDistance').textContent = distances.month.toFixed(1);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('totalRuns').textContent = runs.length;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('currentStreak').textContent = streak;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Update recent runs</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const recentRunsDiv = document.getElementById('recentRuns');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (runs.length === 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>recentRunsDiv.innerHTML = '&lt;p style="text-align: center; color: #718096;"&gt;No runs logged yet&lt;/p&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const recentRuns = runs.slice(0, 10); // Show last 10 runs</p>
-<p class="p1"><span class="Apple-converted-space">                </span>recentRunsDiv.innerHTML = recentRuns.map(run =&gt; `</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="run-item"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;span class="run-date"&gt;${formatDate(run.date)}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="run-distance"&gt;${run.distance.toFixed(1)} km&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button class="delete-btn" onclick="deleteRun('${run.date}')"&gt;✕&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>`).join('');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Format date for display</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function formatDate(dateString) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const date = new Date(dateString);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>return date.toLocaleDateString('en-US', {<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>weekday: 'short',<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>month: 'short',<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>day: 'numeric'<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Show message to user</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function showMessage(text, type) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const messageDiv = document.getElementById('message');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>messageDiv.innerHTML = `&lt;div class="message ${type}"&gt;${text}&lt;/div&gt;`;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>messageDiv.innerHTML = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}, 3000);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Clear all data</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function clearAllData() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (confirm('Are you sure you want to delete all your running data? This cannot be undone.')) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>runs = [];</p>
-<p class="p1"><span class="Apple-converted-space">                </span>saveData();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>updateDisplay();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showMessage('All data cleared', 'success');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Initialize the app when page loads</p>
-<p class="p1"><span class="Apple-converted-space">        </span>init();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+    <div class="container">
+        <div class="header">
+            <h1>🏃‍♂️ Running Tracker</h1>
+            <p>Track your daily runs and build your streak!</p>
+        </div>
+
+        <div class="card">
+            <div class="input-section">
+                <h2>Log Your Run</h2>
+                <input type="date" id="runDate" class="date-input">
+                <div class="distance-input-container">
+                    <input type="number" id="distance" class="distance-input" placeholder="0" step="0.1" min="0">
+                    <span class="km-label">km</span>
+                </div>
+                <button onclick="addRun()" class="btn btn-primary">Add Run</button>
+                <button onclick="clearAllData()" class="btn btn-secondary">Clear All Data</button>
+            </div>
+        </div>
+
+        <div id="message"></div>
+
+        <div class="card">
+            <div class="streak-section">
+                <div class="streak-number" id="currentStreak">0</div>
+                <div class="streak-label">Day Streak</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="text-align: center; margin-bottom: 20px; color: #4a5568;">Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalDistance">0.0</div>
+                    <div class="stat-label">Total km</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="weekDistance">0.0</div>
+                    <div class="stat-label">This Week</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="monthDistance">0.0</div>
+                    <div class="stat-label">This Month</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalRuns">0</div>
+                    <div class="stat-label">Total Runs</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="text-align: center; margin-bottom: 20px; color: #4a5568;">Recent Runs</h2>
+            <div class="recent-runs" id="recentRuns">
+                <p style="text-align: center; color: #718096;">No runs logged yet</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let runs = [];
+
+        // Initialize the app
+        function init() {
+            // Set today's date as default
+            document.getElementById('runDate').value = new Date().toISOString().split('T')[0];
+            
+            // Load saved data
+            loadData();
+            updateDisplay();
+        }
+
+        // Save data to device storage
+        function saveData() {
+            try {
+                localStorage.setItem('runningTrackerData', JSON.stringify(runs));
+            } catch (error) {
+                console.error('Failed to save data:', error);
+                showMessage('Failed to save data', 'error');
+            }
+        }
+
+        // Load data from device storage
+        function loadData() {
+            try {
+                const savedData = localStorage.getItem('runningTrackerData');
+                if (savedData) {
+                    runs = JSON.parse(savedData);
+                    // Sort runs by date (newest first)
+                    runs.sort((a, b) => new Date(b.date) - new Date(a.date));
+                }
+            } catch (error) {
+                console.error('Failed to load data:', error);
+                runs = [];
+            }
+        }
+
+        // Add a new run
+        function addRun() {
+            const dateInput = document.getElementById('runDate');
+            const distanceInput = document.getElementById('distance');
+            
+            const date = dateInput.value;
+            const distance = parseFloat(distanceInput.value);
+
+            if (!date) {
+                showMessage('Please select a date', 'error');
+                return;
+            }
+
+            if (!distance || distance <= 0) {
+                showMessage('Please enter a valid distance', 'error');
+                return;
+            }
+
+            // Check if run already exists for this date
+            const existingRunIndex = runs.findIndex(run => run.date === date);
+            
+            if (existingRunIndex !== -1) {
+                // Update existing run
+                runs[existingRunIndex].distance = distance;
+                showMessage('Run updated successfully!', 'success');
+            } else {
+                // Add new run
+                runs.push({ date, distance });
+                showMessage('Run added successfully!', 'success');
+            }
+
+            // Sort runs by date (newest first)
+            runs.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            // Clear input
+            distanceInput.value = '';
+            
+            saveData();
+            updateDisplay();
+        }
+
+        // Delete a run
+        function deleteRun(date) {
+            runs = runs.filter(run => run.date !== date);
+            saveData();
+            updateDisplay();
+            showMessage('Run deleted', 'success');
+        }
+
+        // Calculate current streak
+        function calculateStreak() {
+            if (runs.length === 0) return 0;
+
+            // Get unique dates and sort them (newest first)
+            const uniqueDates = [...new Set(runs.map(run => run.date))].sort((a, b) => new Date(b) - new Date(a));
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            let streak = 0;
+            let checkDate = new Date(today);
+
+            // Check if we ran today or yesterday to start the streak
+            let streakStarted = false;
+            
+            for (let dateStr of uniqueDates) {
+                const runDate = new Date(dateStr);
+                runDate.setHours(0, 0, 0, 0);
+                
+                const daysDiff = Math.floor((checkDate - runDate) / (1000 * 60 * 60 * 24));
+                
+                if (daysDiff === 0) {
+                    // Ran on checkDate
+                    streak++;
+                    streakStarted = true;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else if (daysDiff === 1 && streakStarted) {
+                    // Ran the day before, continue streak
+                    streak++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else if (daysDiff === 1 && !streakStarted) {
+                    // First run was yesterday, start streak
+                    streak++;
+                    streakStarted = true;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else if (daysDiff > 1) {
+                    // Gap in streak
+                    break;
+                }
+            }
+
+            return streak;
+        }
+
+        // Calculate distances for different periods
+        function calculateDistances() {
+            const today = new Date();
+            today.setHours(23, 59, 59, 999); // End of today
+            
+            // Calculate start of this week (Sunday)
+            const thisWeekStart = new Date(today);
+            thisWeekStart.setDate(today.getDate() - today.getDay());
+            thisWeekStart.setHours(0, 0, 0, 0);
+
+            // Calculate start of this month
+            const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+            thisMonthStart.setHours(0, 0, 0, 0);
+
+            let total = 0;
+            let week = 0;
+            let month = 0;
+
+            runs.forEach(run => {
+                const runDate = new Date(run.date + 'T00:00:00'); // Ensure consistent parsing
+                const distance = parseFloat(run.distance) || 0;
+                
+                total += distance;
+
+                // Check if run is in current week
+                if (runDate >= thisWeekStart && runDate <= today) {
+                    week += distance;
+                }
+
+                // Check if run is in current month
+                if (runDate >= thisMonthStart && runDate <= today) {
+                    month += distance;
+                }
+            });
+
+            return { 
+                total: Math.round(total * 10) / 10, 
+                week: Math.round(week * 10) / 10, 
+                month: Math.round(month * 10) / 10 
+            };
+        }
+
+        // Update the display
+        function updateDisplay() {
+            const distances = calculateDistances();
+            const streak = calculateStreak();
+
+            // Update statistics
+            document.getElementById('totalDistance').textContent = distances.total.toFixed(1);
+            document.getElementById('weekDistance').textContent = distances.week.toFixed(1);
+            document.getElementById('monthDistance').textContent = distances.month.toFixed(1);
+            document.getElementById('totalRuns').textContent = runs.length;
+            document.getElementById('currentStreak').textContent = streak;
+
+            // Update recent runs
+            const recentRunsDiv = document.getElementById('recentRuns');
+            if (runs.length === 0) {
+                recentRunsDiv.innerHTML = '<p style="text-align: center; color: #718096;">No runs logged yet</p>';
+            } else {
+                const recentRuns = runs.slice(0, 10); // Show last 10 runs
+                recentRunsDiv.innerHTML = recentRuns.map(run => `
+                    <div class="run-item">
+                        <span class="run-date">${formatDate(run.date)}</span>
+                        <div>
+                            <span class="run-distance">${run.distance.toFixed(1)} km</span>
+                            <button class="delete-btn" onclick="deleteRun('${run.date}')">✕</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                weekday: 'short', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        // Show message to user
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="message ${type}">${text}</div>`;
+            
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        // Clear all data
+        function clearAllData() {
+            if (confirm('Are you sure you want to delete all your running data? This cannot be undone.')) {
+                runs = [];
+                saveData();
+                updateDisplay();
+                showMessage('All data cleared', 'success');
+            }
+        }
+
+        // Initialize the app when page loads
+        init();
+    </script>
 </body>
 </html>
