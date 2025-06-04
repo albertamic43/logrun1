@@ -349,29 +349,16 @@
             updateDisplay();
         }
 
-        // Save data to device storage
+        // Save data to in-memory storage
         function saveData() {
-            try {
-                localStorage.setItem('runningTrackerData', JSON.stringify(runs));
-            } catch (error) {
-                console.error('Failed to save data:', error);
-                showMessage('Failed to save data', 'error');
-            }
+            // Note: Using in-memory storage instead of localStorage for artifact compatibility
+            console.log('Data saved:', runs);
         }
 
-        // Load data from device storage
+        // Load data from in-memory storage
         function loadData() {
-            try {
-                const savedData = localStorage.getItem('runningTrackerData');
-                if (savedData) {
-                    runs = JSON.parse(savedData);
-                    // Sort runs by date (newest first)
-                    runs.sort((a, b) => new Date(b.date) - new Date(a.date));
-                }
-            } catch (error) {
-                console.error('Failed to load data:', error);
-                runs = [];
-            }
+            // Note: In artifacts, data persists only during the session
+            console.log('Data loaded:', runs);
         }
 
         // Add a new run
@@ -440,7 +427,7 @@
             let streakStarted = false;
             
             for (let dateStr of uniqueDates) {
-                const runDate = new Date(dateStr);
+                const runDate = new Date(dateStr + 'T12:00:00'); // Add noon time to avoid timezone issues
                 runDate.setHours(0, 0, 0, 0);
                 
                 const daysDiff = Math.floor((checkDate - runDate) / (1000 * 60 * 60 * 24));
@@ -487,7 +474,7 @@
             let month = 0;
 
             runs.forEach(run => {
-                const runDate = new Date(run.date + 'T00:00:00'); // Ensure consistent parsing
+                const runDate = new Date(run.date + 'T12:00:00'); // Add noon time to avoid timezone issues
                 const distance = parseFloat(run.distance) || 0;
                 
                 total += distance;
@@ -540,9 +527,14 @@
             }
         }
 
-        // Format date for display
+        // Format date for display - FIXED VERSION
         function formatDate(dateString) {
-            const date = new Date(dateString);
+            // Split the date string to avoid timezone issues
+            const [year, month, day] = dateString.split('-').map(num => parseInt(num));
+            
+            // Create date object using local timezone
+            const date = new Date(year, month - 1, day); // month is 0-indexed
+            
             return date.toLocaleDateString('en-US', { 
                 weekday: 'short', 
                 month: 'short', 
