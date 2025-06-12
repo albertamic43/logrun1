@@ -259,6 +259,29 @@
             border: 1px solid #f5c6cb;
         }
 
+        .export-import {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .btn-small {
+            width: auto;
+            padding: 8px 16px;
+            font-size: 14px;
+            margin: 0 5px;
+        }
+
+        .data-textarea {
+            width: 100%;
+            height: 100px;
+            margin: 10px 0;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
         @media (max-width: 480px) {
             .container {
                 padding: 10px;
@@ -294,10 +317,23 @@
                 </div>
                 <button onclick="addRun()" class="btn btn-primary">Add Run</button>
                 <button onclick="clearAllData()" class="btn btn-secondary">Clear All Data</button>
+                
+                <div class="export-import">
+                    <button onclick="exportData()" class="btn btn-primary btn-small">Export Data</button>
+                    <button onclick="showImportDialog()" class="btn btn-primary btn-small">Import Data</button>
+                </div>
             </div>
         </div>
 
         <div id="message"></div>
+
+        <div id="importDialog" style="display: none;" class="card">
+            <h3 style="text-align: center; margin-bottom: 15px;">Import Data</h3>
+            <p style="text-align: center; margin-bottom: 10px; font-size: 14px;">Paste your exported data below:</p>
+            <textarea id="importData" class="data-textarea" placeholder="Paste your exported data here..."></textarea>
+            <button onclick="importData()" class="btn btn-primary" style="margin-bottom: 10px;">Import</button>
+            <button onclick="hideImportDialog()" class="btn btn-secondary">Cancel</button>
+        </div>
 
         <div class="card">
             <div class="streak-section">
@@ -337,7 +373,19 @@
     </div>
 
     <script>
-        let runs = [];
+        // Global persistent storage - this will maintain data across page reloads within the artifact
+        window.runTracker = window.runTracker || {
+            runs: [
+                // Sample data to show the app working - you can delete these by using "Clear All Data"
+                { date: '2025-06-10', distance: 5.2 },
+                { date: '2025-06-09', distance: 3.8 },
+                { date: '2025-06-08', distance: 4.5 },
+                { date: '2025-06-06', distance: 6.1 },
+                { date: '2025-06-05', distance: 2.7 }
+            ]
+        };
+
+        let runs = window.runTracker.runs;
 
         // Initialize the app
         function init() {
@@ -349,16 +397,83 @@
             updateDisplay();
         }
 
-        // Save data to in-memory storage
+        // Save data to persistent storage
         function saveData() {
-            // Note: Using in-memory storage instead of localStorage for artifact compatibility
+            window.runTracker.runs = runs;
             console.log('Data saved:', runs);
         }
 
-        // Load data from in-memory storage
+        // Load data from persistent storage
         function loadData() {
-            // Note: In artifacts, data persists only during the session
+            runs = window.runTracker.runs || [];
             console.log('Data loaded:', runs);
+        }
+
+        // Export data as JSON
+        function exportData() {
+            const dataStr = JSON.stringify(runs, null, 2);
+            
+            // Create a temporary textarea to copy the data
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = dataStr;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextarea);
+            
+            showMessage('Data copied to clipboard! Save it somewhere safe.', 'success');
+        }
+
+        // Show import dialog
+        function showImportDialog() {
+            document.getElementById('importDialog').style.display = 'block';
+        }
+
+        // Hide import dialog
+        function hideImportDialog() {
+            document.getElementById('importDialog').style.display = 'none';
+            document.getElementById('importData').value = '';
+        }
+
+        // Import data from JSON
+        function importData() {
+            const importText = document.getElementById('importData').value.trim();
+            
+            if (!importText) {
+                showMessage('Please paste your data first', 'error');
+                return;
+            }
+
+            try {
+                const importedRuns = JSON.parse(importText);
+                
+                if (!Array.isArray(importedRuns)) {
+                    throw new Error('Invalid data format');
+                }
+
+                // Validate the imported data
+                for (let run of importedRuns) {
+                    if (!run.date || !run.distance || isNaN(run.distance)) {
+                        throw new Error('Invalid run data format');
+                    }
+                }
+
+                // Merge with existing data (avoiding duplicates)
+                const existingDates = new Set(runs.map(run => run.date));
+                const newRuns = importedRuns.filter(run => !existingDates.has(run.date));
+                
+                runs = [...runs, ...newRuns];
+                runs.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                saveData();
+                updateDisplay();
+                hideImportDialog();
+                
+                showMessage(`Successfully imported ${newRuns.length} new runs!`, 'success');
+                
+            } catch (error) {
+                showMessage('Invalid data format. Please check your data and try again.', 'error');
+            }
         }
 
         // Add a new run
@@ -527,7 +642,7 @@
             }
         }
 
-        // Format date for display - FIXED VERSION
+        // Format date for display
         function formatDate(dateString) {
             // Split the date string to avoid timezone issues
             const [year, month, day] = dateString.split('-').map(num => parseInt(num));
