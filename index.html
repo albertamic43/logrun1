@@ -373,19 +373,7 @@
     </div>
 
     <script>
-        // Global persistent storage - this will maintain data across page reloads within the artifact
-        window.runTracker = window.runTracker || {
-            runs: [
-                // Sample data to show the app working - you can delete these by using "Clear All Data"
-                { date: '2025-06-10', distance: 5.2 },
-                { date: '2025-06-09', distance: 3.8 },
-                { date: '2025-06-08', distance: 4.5 },
-                { date: '2025-06-06', distance: 6.1 },
-                { date: '2025-06-05', distance: 2.7 }
-            ]
-        };
-
-        let runs = window.runTracker.runs;
+        let runs = [];
 
         // Initialize the app
         function init() {
@@ -397,31 +385,72 @@
             updateDisplay();
         }
 
-        // Save data to persistent storage
+        // Save data to localStorage
         function saveData() {
-            window.runTracker.runs = runs;
-            console.log('Data saved:', runs);
+            try {
+                localStorage.setItem('runTrackerData', JSON.stringify(runs));
+                console.log('Data saved to localStorage:', runs);
+            } catch (error) {
+                console.log('localStorage not available:', error);
+            }
         }
 
-        // Load data from persistent storage
+        // Load data from localStorage
         function loadData() {
-            runs = window.runTracker.runs || [];
-            console.log('Data loaded:', runs);
+            try {
+                const savedData = localStorage.getItem('runTrackerData');
+                if (savedData) {
+                    runs = JSON.parse(savedData);
+                    console.log('Data loaded from localStorage:', runs);
+                } else {
+                    runs = [];
+                    console.log('No saved data found, starting with empty array');
+                }
+            } catch (error) {
+                console.log('Error loading data from localStorage:', error);
+                runs = [];
+            }
         }
 
         // Export data as JSON
         function exportData() {
             const dataStr = JSON.stringify(runs, null, 2);
             
-            // Create a temporary textarea to copy the data
+            // Try to use the modern clipboard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(dataStr).then(() => {
+                    showMessage('Data copied to clipboard! Save it somewhere safe.', 'success');
+                }).catch(() => {
+                    // Fallback method
+                    fallbackCopyToClipboard(dataStr);
+                });
+            } else {
+                // Fallback method for older browsers or non-secure contexts
+                fallbackCopyToClipboard(dataStr);
+            }
+        }
+
+        // Fallback clipboard method
+        function fallbackCopyToClipboard(text) {
             const tempTextarea = document.createElement('textarea');
-            tempTextarea.value = dataStr;
+            tempTextarea.value = text;
+            tempTextarea.style.position = 'fixed';
+            tempTextarea.style.left = '-999999px';
+            tempTextarea.style.top = '-999999px';
             document.body.appendChild(tempTextarea);
+            tempTextarea.focus();
             tempTextarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempTextarea);
             
-            showMessage('Data copied to clipboard! Save it somewhere safe.', 'success');
+            try {
+                document.execCommand('copy');
+                showMessage('Data copied to clipboard! Save it somewhere safe.', 'success');
+            } catch (err) {
+                showMessage('Could not copy data. Please export manually.', 'error');
+                // Show the data in an alert as last resort
+                alert('Copy this data manually:\n\n' + text);
+            }
+            
+            document.body.removeChild(tempTextarea);
         }
 
         // Show import dialog
@@ -519,10 +548,12 @@
 
         // Delete a run
         function deleteRun(date) {
-            runs = runs.filter(run => run.date !== date);
-            saveData();
-            updateDisplay();
-            showMessage('Run deleted', 'success');
+            if (confirm('Are you sure you want to delete this run?')) {
+                runs = runs.filter(run => run.date !== date);
+                saveData();
+                updateDisplay();
+                showMessage('Run deleted', 'success');
+            }
         }
 
         // Calculate current streak
